@@ -12,15 +12,15 @@ class MinimaxAgent:
         int: a score for the current board
     """
     if depth == 0 or board.is_game_over():
-      return self.eval_fn(board)
+      return board.evaluate()
     if maximizingPlayer:
       value = float('-inf')
-      for move in board.legal_moves():
+      for move in board.legal_moves(True):
         value = max(value, self.minimax(move, depth - 1, False))
       return value
     else:
       value = float('inf')
-      for move in board.legal_moves():
+      for move in board.legal_moves(False):
         value = min(value, self.minimax(move, depth - 1, True))
       return value
   
@@ -38,7 +38,7 @@ class MinimaxAgent:
         int: a score for the current board
     """
     if depth == 0 or board.is_game_over():
-      return self.eval_fn(board)
+      return board.evaluate()
     if maximizingPlayer:
       value = float('-inf')
       for move in board.legal_moves():
