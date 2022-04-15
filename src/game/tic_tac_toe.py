@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Tuple
 from copy import deepcopy
 
 class TicTacToe():
@@ -61,14 +61,14 @@ class TicTacToe():
             return True
         return False
 
-    def legal_moves(self, player) -> List[TicTacToe]:
+    def legal_moves(self, player) -> List[Tuple[TicTacToe, int, int]]:
         """Generate a list of legal moves for the given player
 
         Args:
             player (str): player marker
 
         Returns:
-            List[Game]: a list of TicTacToe objects
+            List[Tuple[TicTacToe, int, int]]: a list of TicTacToe objects and their corresponding coordinates
         """
         mark = self.player_marker if player else self.opponent_marker
         possible_moves = []
@@ -77,7 +77,7 @@ class TicTacToe():
                 if self.board[row][col] == self.empty_mark:
                     new_board = deepcopy(self.board)
                     new_board[row][col] = mark
-                    possible_moves.append(TicTacToe(new_board))
+                    possible_moves.append((TicTacToe(new_board), row, col))
         return possible_moves
     
     def set_marker(self, row: int, col: int, player: str) -> None:

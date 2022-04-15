@@ -15,12 +15,12 @@ class MinimaxAgent:
       return board.evaluate()
     if maximizingPlayer:
       value = float('-inf')
-      for move in board.legal_moves(True):
+      for move, _, _ in board.legal_moves(True):
         value = max(value, self.minimax(move, depth - 1, False))
       return value
     else:
       value = float('inf')
-      for move in board.legal_moves(False):
+      for move, _, _ in board.legal_moves(False):
         value = min(value, self.minimax(move, depth - 1, True))
       return value
   
@@ -41,7 +41,7 @@ class MinimaxAgent:
       return board.evaluate()
     if maximizingPlayer:
       value = float('-inf')
-      for move in board.legal_moves(True):
+      for move, _, _ in board.legal_moves(True):
         value = max(value, self.alphabeta(move, depth - 1, alpha, beta, False))
         alpha = max(alpha, value)
         if beta <= alpha:
@@ -49,11 +49,23 @@ class MinimaxAgent:
       return value
     else:
       value = float('inf')
-      for move in board.legal_moves(False):
+      for move, _, _ in board.legal_moves(False):
         value = min(value, self.alphabeta(move, depth - 1, alpha, beta, True))
         beta = min(beta, value)
         if beta <= alpha:
           break
       return value
+  
+  def get_score(self, board, depth) -> int:
+    """A wrapper for minimax algorithm that will be expose to driver, modify this to use pruning.
+
+    Args:
+        board (Game): A game object
+        depth (int): an integer specifying the depth of search
+
+    Returns:
+        int: a score for the current board
+    """
+    return self.minimax(board, depth, False)
   
   
