@@ -63,7 +63,7 @@ class Driver:
 
         ai_decision = self.ai_move(ai_depth)
         self.game.set_marker(ai_decision[0], ai_decision[1], self.game.player_marker)
-        # print(self.game)
         if self.game.is_game_over():
+          print(self.game)
           break
       print("Game over!")
