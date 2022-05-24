@@ -66,6 +66,7 @@ class MinimaxAgent:
     Returns:
         int: a score for the current board
     """
-    return self.minimax(board, depth, False)
+    # return self.minimax(board, depth, False)
+    return self.alphabeta(board, depth, float('-inf'), float('inf'), False)
   
   

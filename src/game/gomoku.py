@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List, Tuple
 from copy import deepcopy
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Pool
 
 
 class Gomoku:
@@ -65,9 +65,11 @@ class Gomoku:
         ]
         for p in processes:
             p.start()
-        for p in processes:
-            p.join()
-        for _ in range(4):
+        # for p in processes:
+        #     p.join()
+        while answers.qsize() != 4:
+            pass
+        while not answers.empty():
             terminated, winner = answers.get()
             if terminated:
                 self.winner = winner
@@ -94,7 +96,7 @@ class Gomoku:
         possible_moves = []
         for row in range(self.board_size):
             for col in range(self.board_size):
-                if self.board[row][col] == self.empty_mark:
+                if self.board[row][col] == self.empty_mark and self._has_neighbor([row, col]):
                     new_board = deepcopy(self.board)
                     new_board[row][col] = mark
                     possible_moves.append((Gomoku(new_board), row, col))
@@ -121,7 +123,7 @@ class Gomoku:
                     column = "".join(self._get_column((i, j)))
                     lslash = "".join(self._get_lslash((i, j)))
                     rslash = "".join(self._get_rslash((i, j)))
-
+                    
                     total_score += self._calc_score(row)
                     total_score += self._calc_score(column)
                     total_score += self._calc_score(lslash)
