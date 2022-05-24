@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import List, Tuple
 from copy import deepcopy
+from multiprocessing import Process, Queue
 
 
 class Gomoku:
@@ -54,33 +55,24 @@ class Gomoku:
         Returns:
             bool: True if the game is over, False otherwise
         """
-        # 1. Check horizontal
-        for x in range(self.board_size - 4):
-            for y in range(self.board_size):
-                if self.board[x][y] == self.board[x + 1][y] == self.board[x + 2][y] == self.board[x + 3][y] == self.board[x + 4][y] != self.empty_mark:
-                    self.winner = self.board[x][y]
-                    return True
 
-        # 2. Check vertical
-        for x in range(self.board_size):
-            for y in range(self.board_size - 4):
-                if self.board[x][y] == self.board[x][y + 1] == self.board[x][y + 2] == self.board[x][y + 3] == self.board[x][y + 4] != self.empty_mark:
-                    self.winner = self.board[x][y]
-                    return True
+        answers = Queue()
+        processes = [
+            Process(target=self._check_horizontal, args=(answers,)),
+            Process(target=self._check_vertical, args=(answers,)),
+            Process(target=self._check_diagonal_tlbr, args=(answers,)),
+            Process(target=self._check_diagonal_trbl, args=(answers,))
+        ]
+        for p in processes:
+            p.start()
+        for p in processes:
+            p.join()
+        for _ in range(4):
+            terminated, winner = answers.get()
+            if terminated:
+                self.winner = winner
+                return True
 
-        # 3. Check diagonal (top left to bottom right)
-        for x in range(self.board_size - 4):
-            for y in range(self.board_size - 4):
-                if self.board[x][y] == self.board[x + 1][y + 1] == self.board[x + 2][y + 2] == self.board[x + 3][y + 3] == self.board[x + 4][y + 4] != self.empty_mark:
-                    self.winner = self.board[x][y]
-                    return True
-
-        # 4. Check diagonal (top right to bottom left)
-        for x in range(self.board_size - 4):
-            for y in range(self.board_size - 4):
-                if self.board[x + 4][y] == self.board[x + 3][y + 1] == self.board[x + 2][y + 2] == self.board[x + 1][y + 3] == self.board[x][y + 4] != self.empty_mark:
-                    self.winner = self.board[x + 4][y]
-                    return True
 
         # 5. Check for draw
         for x in range(self.board_size):
@@ -89,7 +81,7 @@ class Gomoku:
                     return False
 
         return True
-    
+
     def legal_moves(self, player) -> List[Tuple[Gomoku, int, int]]:
         """Generate a list of legal moves for the given player
 
@@ -97,6 +89,61 @@ class Gomoku:
             player (str): player marker
 
         Returns:
-            List[Tuple[TicTacToe, int, int]]: a list of TicTacToe objects and their corresponding coordinates
+            List[Tuple[Gomoku, int, int]]: a list of TicTacToe objects and their corresponding coordinates
         """
-        pass
+        mark = self.player_marker if player else self.opponent_marker
+        possible_moves = []
+        for row in range(self.board_size):
+            for col in range(self.board_size):
+                if self.board[row][col] == self.empty_mark:
+                    new_board = deepcopy(self.board)
+                    new_board[row][col] = mark
+                    possible_moves.append((Gomoku(new_board), row, col))
+        return possible_moves
+
+    def evaluate(self) -> int:
+        """Evaluate the board for the given player
+
+        Args:
+            player (str): player marker
+
+        Returns:
+            int: Positive higher score indicates better move for current player
+        """
+        ...
+
+    # 1. Check horizontal
+    def _check_horizontal(self, q: Queue) -> bool:
+        for x in range(self.board_size - 4):
+            for y in range(self.board_size):
+                if self.board[x][y] == self.board[x + 1][y] == self.board[x + 2][y] == self.board[x + 3][y] == self.board[x + 4][y] != self.empty_mark:
+                    q.put([True, self.board[x][y]])
+                    return
+        q.put([False, None])
+
+    # 2. Check vertical
+    def _check_vertical(self, q: Queue) -> bool:
+        for x in range(self.board_size):
+            for y in range(self.board_size - 4):
+                if self.board[x][y] == self.board[x][y + 1] == self.board[x][y + 2] == self.board[x][y + 3] == self.board[x][y + 4] != self.empty_mark:
+                    q.put([True, self.board[x][y]])
+                    return
+        q.put([False, None])
+
+    # 3. Check diagonal (top left to bottom right)
+    def _check_diagonal_tlbr(self, q: Queue) -> bool:
+        for x in range(self.board_size - 4):
+            for y in range(self.board_size - 4):
+                if self.board[x][y] == self.board[x + 1][y + 1] == self.board[x + 2][y + 2] == self.board[x + 3][y + 3] == self.board[x + 4][y + 4] != self.empty_mark:
+                    q.put([True, self.board[x][y]])
+                    return
+        q.put([False, None])
+
+    # 4. Check diagonal (top right to bottom left)
+    def _check_diagonal_trbl(self, q: Queue) -> bool:
+        for x in range(self.board_size - 4):
+            for y in range(self.board_size - 4):
+                if self.board[x + 4][y] == self.board[x + 3][y + 1] == self.board[x + 2][y + 2] == self.board[x + 1][y + 3] == self.board[x][y + 4] != self.empty_mark:
+                    q.put([True, self.board[x][y]])
+                    return
+        q.put([False, None])
