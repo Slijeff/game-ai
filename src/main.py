@@ -11,11 +11,6 @@ import driver
 
 if __name__ == "__main__":
   gomoku = gmk.Gomoku()
-  gomoku.set_marker(0, 0, "X")
-  gomoku.set_marker(1, 1, "X")
-  gomoku.set_marker(2, 2, "X")
-  gomoku.set_marker(3, 3, "X")
-  gomoku.set_marker(4, 4, "X")
-  print(gomoku)
-  print(gomoku.is_game_over())
-  print(gomoku.winner)
+  agent = mm.MinimaxAgent()
+  Drive = driver.Driver(agent, gomoku)
+  Drive.play(ai_first = False, ai_depth=1)

@@ -18,6 +18,7 @@ class Driver:
     all_moves = self.game.legal_moves(True)
     heap = []
     for move, row, col in all_moves:
+      print("Calculating move for row: {}, col: {}".format(row, col))
       score = self.agent.get_score(move, depth)
       heapq.heappush(heap, (-score, (row, col)))
     return heapq.heappop(heap)[1]

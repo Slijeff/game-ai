@@ -12,8 +12,8 @@ class Gomoku:
             board (List[List[str]], optional): The new board state to copy from, defaults to None.
         """
         self.board_size = 15
-        self.player_marker = 'X'
-        self.opponent_marker = 'O'
+        self.player_marker = 'x'
+        self.opponent_marker = 'o'
         self.empty_mark = '_'
         self.board = [[self.empty_mark] * self.board_size for _ in range(
             self.board_size)] if board is None else board
@@ -73,7 +73,6 @@ class Gomoku:
                 self.winner = winner
                 return True
 
-
         # 5. Check for draw
         for x in range(self.board_size):
             for y in range(self.board_size):
@@ -104,13 +103,31 @@ class Gomoku:
     def evaluate(self) -> int:
         """Evaluate the board for the given player
 
+        Notes:
+            The evaluation function credits to https://github.com/HuyTtdd/gomoku-minimax
+
         Args:
             player (str): player marker
 
         Returns:
             int: Positive higher score indicates better move for current player
         """
-        ...
+
+        total_score = 0
+        for i in range(self.board_size):
+            for j in range(self.board_size):
+                if self.board[i][j] != self.empty_mark or self._has_neighbor([i, j]):
+                    row = "".join(self._get_row((i, j)))
+                    column = "".join(self._get_column((i, j)))
+                    lslash = "".join(self._get_lslash((i, j)))
+                    rslash = "".join(self._get_rslash((i, j)))
+
+                    total_score += self._calc_score(row)
+                    total_score += self._calc_score(column)
+                    total_score += self._calc_score(lslash)
+                    total_score += self._calc_score(rslash)
+
+        return total_score
 
     # 1. Check horizontal
     def _check_horizontal(self, q: Queue) -> bool:
@@ -147,3 +164,69 @@ class Gomoku:
                     q.put([True, self.board[x][y]])
                     return
         q.put([False, None])
+
+    def _get_row(self, p):
+        return self.board[p[0]][max(p[1]-4, 0): min(p[1]+5, self.board_size)]
+
+
+    def _get_column(self, p):
+        return [self.board[i][p[1]] for i in range(max(p[0]-4, 0), min(p[0]+5, self.board_size))]
+
+
+    def _get_lslash(self, p):
+        lslash_1 = [self.board[p[0]+i][p[1]+i]
+                    for i in range(min(5, self.board_size - max(p[0], p[1])))]
+        lslash = [self.board[p[0]-i][p[1]-i]
+                for i in range(1, min(5, p[0]+1, p[1]+1))][::-1]
+
+        lslash.extend(lslash_1)
+
+        return lslash
+
+
+    def _get_rslash(self, p):
+        rslash_1 = [self.board[p[0]-i][p[1]+i]
+                    for i in range(min(p[0] - max(p[0]-5, -1), min(p[1]+5, self.board_size) - p[1]))]
+
+        rslash = [self.board[p[0]+i][p[1]-i]
+                for i in range(1, min(min(p[0]+5, self.board_size) - p[0], p[1] - max(p[1]-5, -1)))][::-1]
+
+        rslash.extend(rslash_1)
+
+        return rslash
+
+    def _has_neighbor(self, p):
+        pos = [(-1, -1), (-1, 0), (-1, 1), (0, 1),
+            (1, 1), (1, 0), (1, -1), (0, -1)]
+
+        for i in pos:
+            try:
+                if self.board[p[0]+i[0]][p[1]+i[1]] != self.empty_mark:
+                    return True
+            except IndexError:
+                continue
+        return False
+    
+    def _calc_score(self, list_):
+        scores = {0: 99999, 1: 900, 2: 90, 3: 90, 4: 90, 5: 90,
+                6: 90, 7: 50, 8: 5, 9: 5, 10: 2, 11: 2, 12: 2, 13: 2}
+        pattern_x = ["xxxxx", "_xxxx_", "xxxx_", "_xxxx", "xxx_x", "xx_xx",
+                    "x_xxx", "_xxx_", "xxx_", "_xxx", "_x_x_", "_xx_", "_xx", "xx_"]
+        pattern_o = ["ooooo", "_oooo_", "oooo_", "_oooo", "ooo_o", "oo_oo",
+                    "o_ooo", "_ooo_", "ooo_", "_ooo", "_o_o_", "_oo_", "_oo", "oo_"]
+
+        score = 0
+
+        for index, pattern in enumerate(pattern_x):
+            z = list_.find(pattern)
+            if z != -1:
+                score += scores[index]
+                break
+
+        for index, pattern in enumerate(pattern_o):
+            z = list_.find(pattern)
+            if z != -1:
+                score -= scores[index]
+                break
+
+        return score
