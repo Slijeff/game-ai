@@ -83,11 +83,11 @@ class Gomoku:
 
         return True
 
-    def legal_moves(self, player) -> List[Tuple[Gomoku, int, int]]:
+    def legal_moves(self, player: bool) -> List[Tuple[Gomoku, int, int]]:
         """Generate a list of legal moves for the given player
 
         Args:
-            player (str): player marker
+            player (bool): player marker
 
         Returns:
             List[Tuple[Gomoku, int, int]]: a list of TicTacToe objects and their corresponding coordinates
@@ -130,6 +130,10 @@ class Gomoku:
                     total_score += self._calc_score(rslash)
 
         return total_score
+    
+    def clear_board(self):
+        self.board = [[self.empty_mark] * self.board_size for _ in range(
+            self.board_size)]
 
     # 1. Check horizontal
     def _check_horizontal(self, q: Queue) -> bool:
