@@ -2,9 +2,10 @@ import flask
 import game.gomoku as gmk
 import agents.minimax as mm
 import heapq
-
+from flask_cors import CORS
 
 app = flask.Flask(__name__)
+cors = CORS(app)
 gomoku = gmk.Gomoku()
 agent = mm.MinimaxAgent()
 
@@ -40,17 +41,21 @@ def humanplay():
         heap = []
         for move, row, col in all_moves:
             print("Calculating move for row: {}, col: {}".format(row, col))
-            score = agent.get_score(move, data["depth"])
+            score = agent.get_score(move, int(data["depth"]))
             heapq.heappush(heap, (-score, (row, col)))
         airow, aicol = heapq.heappop(heap)[1]
         gomoku.set_marker(airow, aicol, gomoku.player_marker)
-        return {"finished": gomoku.is_game_over(), "board": gomoku.board}
+        return flask.jsonify({"finished": gomoku.is_game_over(), "board": gomoku.board})
 
 
 @app.route('/clear')
 def clear():
     gomoku.clear_board()
-    return {"board": gomoku.board}
+    return flask.jsonify({"board": gomoku.board})
+
+@app.route('/get_board')
+def getBoard():
+    return flask.jsonify({"board": gomoku.board})
 
 
 if __name__ == "__main__":
