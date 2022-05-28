@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { FieldBoardObject, SVGBoard } from "wgo";
-import { useBoolean } from "@chakra-ui/react";
+import { useBoolean, useToast } from "@chakra-ui/react";
 
 export const Board = ({ clearSignal, serverAddr }) => {
   const boardContainerRef = useRef();
@@ -23,6 +23,7 @@ export const Board = ({ clearSignal, serverAddr }) => {
   const calBoard = useRef([]);
   const [isEmpty, setNotEmpty] = useBoolean(true);
   const DEPTH = 1;
+  const toast = useToast();
 
   const fetchPlay = useCallback(
     async (row, col) => {
@@ -30,9 +31,18 @@ export const Board = ({ clearSignal, serverAddr }) => {
         calBoard.current = matrix;
         setNotEmpty.toggle();
       }
+
+      const loadingToast = toast({
+        title: "Calculating...",
+        description: "This might take a while",
+        duration: null,
+        position: "top",
+      });
       const data = await fetch(
         `${serverAddr}/humanplay?row=${row}&col=${col}&depth=${DEPTH}`
       );
+      toast.close(loadingToast);
+
       const json = await data.json();
       const resBoard = json["board"];
       for (let i = 0; i < board.getSize(); i++) {
@@ -48,7 +58,7 @@ export const Board = ({ clearSignal, serverAddr }) => {
       }
       calBoard.current = [].concat(...resBoard);
     },
-    [board, isEmpty, matrix, setNotEmpty, serverAddr]
+    [board, isEmpty, matrix, setNotEmpty, serverAddr, toast]
   );
 
   useEffect(() => {
