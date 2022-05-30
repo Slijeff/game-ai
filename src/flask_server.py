@@ -22,7 +22,7 @@ def aiplay():
     heap = []
     for move, row, col in all_moves:
         print("Calculating move for row: {}, col: {}".format(row, col))
-        score = agent.get_score(move, data["depth"])
+        score = agent.get_score(move, int(data["depth"]))
         heapq.heappush(heap, (-score, (row, col)))
     airow, aicol = heapq.heappop(heap)[1]
     gomoku.set_marker(airow, aicol, gomoku.player_marker)
@@ -59,4 +59,4 @@ def getBoard():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="127.0.0.1", port=5000, debug=True)

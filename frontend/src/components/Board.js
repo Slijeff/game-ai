@@ -31,7 +31,6 @@ export const Board = ({ clearSignal, serverAddr }) => {
         calBoard.current = matrix;
         setNotEmpty.toggle();
       }
-
       const loadingToast = toast({
         title: "Calculating...",
         description: "This might take a while",
@@ -44,6 +43,16 @@ export const Board = ({ clearSignal, serverAddr }) => {
       toast.close(loadingToast);
 
       const json = await data.json();
+      console.log(json["finished"]);
+      if (json["finished"] === true) {
+        toast({
+          title: "Game Complete",
+          duration: null,
+          position: "top",
+          isClosable: true,
+          status: "warning"
+        });
+      }
       const resBoard = json["board"];
       for (let i = 0; i < board.getSize(); i++) {
         for (let j = 0; j < board.getSize(); j++) {
@@ -51,7 +60,7 @@ export const Board = ({ clearSignal, serverAddr }) => {
             resBoard[i][j] === "x" &&
             calBoard.current[j + i * board.getSize()] !== "x"
           ) {
-            stones.current.push(i + j * board.getSize());
+            stones.current.push(j + i * board.getSize());
             board.addObject(new FieldBoardObject("W", j, i));
           }
         }
