@@ -1,5 +1,5 @@
 # game-ai
-A survey of game AIs, including classic algorithms such as Minimax and MCTS. 
+A survey of game AIs on Gomoku, including classic algorithms such as Minimax and MCTS. 
 
 ![Screenshot of UI](screenshot1.png?raw=true)
 
