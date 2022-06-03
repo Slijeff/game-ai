@@ -1,5 +1,5 @@
 # game-ai
-A survey of game AIs on Gomoku, including classic algorithms such as Minimax and MCTS. It contains a frontend with React and a flask backend that connects to the AI agent class.
+A survey of game AIs on Gomoku, including classic algorithms such as Minimax and MCTS. It contains a frontend with React and a flask backend that connects to the AI agent class. A demo was deployed at http://158.101.19.130/ (it uses the flask development server so please use it only as a demo).
 
 ![Screenshot of UI](screenshot1.png?raw=true)
 
