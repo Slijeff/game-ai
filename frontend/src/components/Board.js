@@ -22,7 +22,7 @@ export const Board = ({ clearSignal, aiSignal ,setAiSignal, serverAddr }) => {
 
   const calBoard = useRef([]);
   const [isEmpty, setNotEmpty] = useBoolean(true);
-  const DEPTH = 2;
+  const DEPTH = 1;
   const toast = useToast();
   const startingToast = useRef();
 
