@@ -8,12 +8,7 @@ app = flask.Flask(__name__)
 cors = CORS(app)
 gomoku = gmk.Gomoku()
 agent = mm.MinimaxAgent()
-isFirstMove = True
-
-@app.route('/')
-def home():
-    return "Request a position to play"
-
+api = flask.Blueprint('api', __name__)
 
 @app.route('/aiplay')
 def aiplay():
@@ -49,6 +44,7 @@ def clear():
 def getBoard():
     return flask.jsonify({"board": gomoku.board})
 
+app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False)

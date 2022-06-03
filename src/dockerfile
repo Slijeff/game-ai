@@ -1,8 +1,10 @@
-FROM python:latest
+FROM python:3.8
 
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-COPY . ./
 
-ENV PYTHONPATH ./
+COPY requirements.txt /usr/src/app
+RUN pip install -r requirements.txt
 
-CMD ["python3", "main.py"]
+ENTRYPOINT [ "flask" ]
+CMD ["run", "--host=0.0.0.0", "--port=5000"]

@@ -1,0 +1,25 @@
+version: "3"
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /home/ubuntu/ssl:/etc/nginx/certs
+
+  backend:
+    restart: always
+    container_name: backend
+    build: ./src
+    expose:
+      - 5000
+    volumes:
+      - ./src:/usr/src/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=flask_server.py
+      - FLASK_DEBUG=0
