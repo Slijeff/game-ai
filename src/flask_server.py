@@ -10,13 +10,13 @@ gomoku = gmk.Gomoku()
 agent = mm.MinimaxAgent()
 api = flask.Blueprint('api', __name__)
 
-@app.route('/aiplay')
+@api.route('/aiplay')
 def aiplay():
     gomoku.set_marker(7, 7, gomoku.player_marker)
     return flask.jsonify({"finished": gomoku.is_game_over(), "board": gomoku.board})
 
 
-@app.route('/humanplay', methods=['GET'])
+@api.route('/humanplay', methods=['GET'])
 def humanplay():
     data = flask.request.args
     gomoku.set_marker(int(data['row']), int(
@@ -35,12 +35,12 @@ def humanplay():
         return flask.jsonify({"finished": gomoku.is_game_over(), "board": gomoku.board})
 
 
-@app.route('/clear')
+@api.route('/clear')
 def clear():
     gomoku.clear_board()
     return flask.jsonify({"board": gomoku.board})
 
-@app.route('/get_board')
+@api.route('/get_board')
 def getBoard():
     return flask.jsonify({"board": gomoku.board})
 

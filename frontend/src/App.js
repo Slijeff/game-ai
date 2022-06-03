@@ -5,7 +5,7 @@ import { Center, Flex, useBoolean, Heading } from "@chakra-ui/react";
 function App() {
   const [clear, setClearSignal] = useBoolean();
   const [ai, setAiSignal] = useBoolean(false);
-  const serverAddr = "api/"
+  const serverAddr = "api"
   return (
     <Flex
       direction="row"

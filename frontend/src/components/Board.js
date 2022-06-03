@@ -22,7 +22,7 @@ export const Board = ({ clearSignal, aiSignal ,setAiSignal, serverAddr }) => {
 
   const calBoard = useRef([]);
   const [isEmpty, setNotEmpty] = useBoolean(true);
-  const DEPTH = 1;
+  const DEPTH = 2;
   const toast = useToast();
   const startingToast = useRef();
 
@@ -109,7 +109,7 @@ export const Board = ({ clearSignal, aiSignal ,setAiSignal, serverAddr }) => {
   // Handles user click on the board
   useEffect(() => {
     const handler = (ev, pos) => {
-      toast.closeAll();
+      toast.close(startingToast.current);
       // If current position is not empty, do nothing
       if (stones.current.includes(pos.x + pos.y * board.getSize())) return;
       fetchPlay(pos.y, pos.x).catch((error) => {
