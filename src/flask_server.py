@@ -8,25 +8,17 @@ app = flask.Flask(__name__)
 cors = CORS(app)
 gomoku = gmk.Gomoku()
 agent = mm.MinimaxAgent()
-
+isFirstMove = True
 
 @app.route('/')
 def home():
     return "Request a position to play"
 
 
-@app.route('/aiplay', methods=['GET'])
+@app.route('/aiplay')
 def aiplay():
-    data = flask.request.args
-    all_moves = gomoku.legal_moves(True)
-    heap = []
-    for move, row, col in all_moves:
-        print("Calculating move for row: {}, col: {}".format(row, col))
-        score = agent.get_score(move, int(data["depth"]))
-        heapq.heappush(heap, (-score, (row, col)))
-    airow, aicol = heapq.heappop(heap)[1]
-    gomoku.set_marker(airow, aicol, gomoku.player_marker)
-    return {"finished": gomoku.is_game_over(), "board": gomoku.board}
+    gomoku.set_marker(7, 7, gomoku.player_marker)
+    return flask.jsonify({"finished": gomoku.is_game_over(), "board": gomoku.board})
 
 
 @app.route('/humanplay', methods=['GET'])
@@ -59,4 +51,4 @@ def getBoard():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=False)

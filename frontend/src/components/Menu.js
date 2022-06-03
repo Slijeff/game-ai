@@ -8,7 +8,8 @@ import {
   Radio,
 } from "@chakra-ui/react";
 
-export const Menu = ({ setClearSignal }) => {
+export const Menu = ({ setClearSignal, setAiSignal, aiSignal }) => {
+
   return (
     <Flex direction="column" m={4} justify="space-between" h="20%">
       <FormControl as="fieldset">
@@ -19,7 +20,15 @@ export const Menu = ({ setClearSignal }) => {
           </HStack>
         </RadioGroup>
       </FormControl>
-      <Button colorScheme="teal">AI First</Button>
+      {aiSignal ? (
+        <Button colorScheme="teal" isDisabled={true}>
+          AI First
+        </Button>
+      ) : (
+        <Button colorScheme="teal" onClick={setAiSignal.on} isDisabled={false}>
+          AI First
+        </Button>
+      )}
       <Button colorScheme="teal" onClick={setClearSignal.toggle}>
         Clear
       </Button>
